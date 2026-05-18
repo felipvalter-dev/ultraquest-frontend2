@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULTRAQUEST // DASHBOARD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        body { font-family: 'Orbitron', sans-serif; background-color: #0d0d11; }
+        .neon-glow { text-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
+        .border-neon { box-shadow: 0 0 15px rgba(255, 85, 85, 0.2); }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col justify-between p-4 md:p-8 selection:bg-red-500 selection:text-white">
+
+    <header class="max-w-4xl w-full mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-900/40 p-6 rounded-xl border border-red-500/30 border-neon backdrop-blur-sm">
+        <div class="flex flex-col justify-center">
+            <span class="text-xs text-red-400 font-bold tracking-widest uppercase">Rank Atual</span>
+            <h1 id="rank-display" class="text-3xl md:text-4xl font-black text-red-500 tracking-wider neon-glow">DESTRUCTIVE</h1>
+        </div>
+        <div class="flex flex-col justify-center items-center md:border-x border-slate-800 py-2">
+            <span class="text-xs text-amber-400 font-bold tracking-widest uppercase">Multiplicador</span>
+            <div id="mult-display" class="text-4xl font-extrabold text-amber-400 tracking-wide">x1.0</div>
+        </div>
+        <div class="flex flex-col justify-center items-end">
+            <span class="text-xs text-emerald-400 font-bold tracking-widest uppercase">Pontuação Total</span>
+            <div id="score-display" class="text-4xl font-black text-emerald-400 tracking-wide font-mono">000000</div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 my-8 flex-grow">
+        <section class="bg-slate-900/30 p-6 rounded-xl border border-slate-800 flex flex-col justify-between">
+            <div>
+                <h2 class="text-lg font-bold text-red-400 mb-4 border-b border-slate-800 pb-2 tracking-wide">// REGISTRAR MISSÃO</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Nome da Tarefa</label>
+                        <input id="task-title" type="text" placeholder="Ex: Estudar FastAPI" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-red-500 transition-colors">
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Prazo (1-3)</label>
+                            <input id="task-prazo" type="number" min="1" max="3" value="1" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Import. (1-3)</label>
+                            <input id="task-importancia" type="number" min="1" max="3" value="1" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Dific. (1-3)</label>
+                            <input id="task-dificuldade" type="number" min="1" max="3" value="1" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-red-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="concluirTarefa()" class="w-full mt-6 bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-4 rounded text-sm tracking-widest uppercase transition-all shadow-lg active:scale-[0.98]">
+                CONCLUIR MISSÃO [ +COMBO ]
+            </button>
+        </section>
+
+        <section class="bg-slate-900/30 p-6 rounded-xl border border-slate-800 flex flex-col">
+            <h2 class="text-lg font-bold text-amber-400 mb-4 border-b border-slate-800 pb-2 tracking-wide">// HISTÓRICO DE ESTILO</h2>
+            <div id="log-container" class="flex-grow font-mono text-xs space-y-2 overflow-y-auto max-h-[250px] pr-2 text-slate-400">
+                <p class="text-slate-600">[SISTEMA VIA INTERNET CONECTADO]</p>
+                <p class="text-red-500/80">> Destrua tarefas para acumular estilo.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center text-[10px] text-slate-600 tracking-widest font-mono uppercase">
+        UltraQuest Engine v1.0 // Operando 24h na Nuvem
+    </footer>
+
+    <script>
+        // COLOQUE O SEU LINK DA RENDER AQUI (SEM O /DOCS NO FINAL)
+        const API_URL = "https://ultraquest-frontend.onrender.com"; 
+
+        async function atualizarStatus() {
+            try {
+                const res = await fetch(`${API_URL}/status`);
+                const data = await res.json();
+                
+                document.getElementById('rank-display').innerText = data.rank;
+                document.getElementById('mult-display').innerText = `x${data.multiplicador.toFixed(1)}`;
+                document.getElementById('score-display').innerText = String(data.pontos_totais).padStart(6, '0');
+            } catch (err) {
+                console.error("Erro ao buscar status:", err);
+            }
+        }
+
+        async function concluirTarefa() {
+            const titulo = document.getElementById('task-title').value || "Missão Sem Nome";
+            const prazo = parseInt(document.getElementById('task-prazo').value);
+            const importancia = parseInt(document.getElementById('task-importancia').value);
+            const dificuldade = parseInt(document.getElementById('task-dificuldade').value);
+
+            try {
+                const res = await fetch(`${API_URL}/tarefas/concluir`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ titulo, prazo, importancia, dificuldade })
+                });
+                
+                const data = await res.json();
+                
+                // Adiciona log na tela
+                const container = document.getElementById('log-container');
+                container.innerHTML += `<p class="text-emerald-400">> Concluído: "${titulo}" (+${data.pontos_ganhos} pts) -> RANK: ${data.estado.rank}</p>`;
+                container.scrollTop = container.scrollHeight;
+
+                // Atualiza o painel visual
+                atualizarStatus();
+                document.getElementById('task-title').value = ""; // limpa o input
+            } catch (err) {
+                alert("Erro ao enviar dados para o servidor da Render.");
+            }
+        }
+
+        // Fica atualizando o status na tela a cada 5 segundos para checar o decaimento por inatividade
+        setInterval(atualizarStatus, 5000);
+        atualizarStatus();
+    </script>
+</body>
+</html>
