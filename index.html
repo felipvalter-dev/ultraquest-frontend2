@@ -54,16 +54,23 @@
                     </div>
                 </div>
             </div>
-            <button onclick="concluirTarefa()" class="w-full mt-6 bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-4 rounded text-sm tracking-widest uppercase transition-all shadow-lg active:scale-[0.98]">
-                CONCLUIR MISSÃO [ +COMBO ]
-            </button>
+            
+            <div class="mt-6 space-y-2">
+                <button onclick="concluirTarefa()" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-4 rounded text-sm tracking-widest uppercase transition-all shadow-lg active:scale-[0.98]">
+                    CONCLUIR MISSÃO [ +COMBO ]
+                </button>
+                
+                <button onclick="resetarPontos()" class="w-full bg-slate-950 hover:bg-red-950 text-red-500 font-bold py-2 px-4 rounded text-xs tracking-widest uppercase transition-all border border-red-950 hover:border-red-500">
+                    REINICIAR SISTEMA [ RESET ]
+                </button>
+            </div>
         </section>
 
         <section class="bg-slate-900/30 p-6 rounded-xl border border-slate-800 flex flex-col">
             <h2 class="text-lg font-bold text-amber-400 mb-4 border-b border-slate-800 pb-2 tracking-wide">// HISTÓRICO DE ESTILO</h2>
             <div id="log-container" class="flex-grow font-mono text-xs space-y-2 overflow-y-auto max-h-[250px] pr-2 text-slate-400">
                 <p class="text-slate-600">[SISTEMA VIA INTERNET CONECTADO]</p>
-                <p class="text-red-500/80">> Destrua tarefas para acumular estilo.</p>
+                <p class="text-red-500/80">> Destrói tarefas para acumular estilo.</p>
             </div>
         </section>
     </main>
@@ -73,8 +80,8 @@
     </footer>
 
     <script>
-        // COLOQUE O SEU LINK DA RENDER AQUI (SEM O /DOCS NO FINAL)
-        const API_URL = "https://ultraquest-frontend.onrender.com"; 
+        // ADICIONE O SEU LINK DA RENDER AQUI (SEM O /DOCS NO FINAL)
+        const API_URL = "https://ultraquest-backend.onrender.com"; 
 
         async function atualizarStatus() {
             try {
@@ -85,7 +92,7 @@
                 document.getElementById('mult-display').innerText = `x${data.multiplicador.toFixed(1)}`;
                 document.getElementById('score-display').innerText = String(data.pontos_totais).padStart(6, '0');
             } catch (err) {
-                console.error("Erro ao buscar status:", err);
+                console.error("Erro ao procurar status:", err);
             }
         }
 
@@ -93,7 +100,7 @@
             const titulo = document.getElementById('task-title').value || "Missão Sem Nome";
             const prazo = parseInt(document.getElementById('task-prazo').value);
             const importancia = parseInt(document.getElementById('task-importancia').value);
-            const dificuldade = parseInt(document.getElementById('task-dificuldade').value);
+            constBox dificuldade = parseInt(document.getElementById('task-dificuldade').value);
 
             try {
                 const res = await fetch(`${API_URL}/tarefas/concluir`, {
@@ -104,20 +111,36 @@
                 
                 const data = await res.json();
                 
-                // Adiciona log na tela
                 const container = document.getElementById('log-container');
                 container.innerHTML += `<p class="text-emerald-400">> Concluído: "${titulo}" (+${data.pontos_ganhos} pts) -> RANK: ${data.estado.rank}</p>`;
                 container.scrollTop = container.scrollHeight;
 
-                // Atualiza o painel visual
                 atualizarStatus();
-                document.getElementById('task-title').value = ""; // limpa o input
+                document.getElementById('task-title').value = "";
             } catch (err) {
                 alert("Erro ao enviar dados para o servidor da Render.");
             }
         }
 
-        // Fica atualizando o status na tela a cada 5 segundos para checar o decaimento por inatividade
+        // NOVA FUNÇÃO: Envia o comando de reset e atualiza o ecrã
+        async function resetarPontos() {
+            if (!confirm("Tens a certeza que desejas apagar todos os teus pontos e voltar ao Rank base?")) return;
+
+            try {
+                const res = await fetch(`${API_URL}/status/reset`, { method: 'POST' });
+                const data = await res.json();
+                
+                const container = document.getElementById('log-container');
+                container.innerHTML += `<p class="text-red-500 font-bold">> [ALERTA] TODOS OS PONTOS FORAM ZERADOS NA NUVEM.</p>`;
+                container.scrollTop = container.scrollHeight;
+
+                atualizarStatus();
+            } catch (err) {
+                alert("Erro ao fazer reset ao servidor.");
+            }
+        }
+
+        // Atualiza a cada 5 segundos para verificar decaimento por inatividade
         setInterval(atualizarStatus, 5000);
         atualizarStatus();
     </script>
