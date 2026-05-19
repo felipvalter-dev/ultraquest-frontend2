@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTRAQUEST // DASHBOARD</title>
+    <title>ULTRAQUEST // BOARD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
@@ -14,7 +14,7 @@
 </head>
 <body class="text-slate-200 min-h-screen flex flex-col justify-between p-4 md:p-8 selection:bg-red-500 selection:text-white">
 
-    <header class="max-w-4xl w-full mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-900/40 p-6 rounded-xl border border-red-500/30 border-neon backdrop-blur-sm">
+    <header class="max-w-6xl w-full mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-900/40 p-6 rounded-xl border border-red-500/30 border-neon backdrop-blur-sm mb-6">
         <div class="flex flex-col justify-center">
             <span class="text-xs text-red-400 font-bold tracking-widest uppercase">Rank Atual</span>
             <h1 id="rank-display" class="text-3xl md:text-4xl font-black text-red-500 tracking-wider neon-glow">DESTRUCTIVE</h1>
@@ -29,59 +29,72 @@
         </div>
     </header>
 
-    <main class="max-w-4xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 my-8 flex-grow">
-        <section class="bg-slate-900/30 p-6 rounded-xl border border-slate-800 flex flex-col justify-between">
+    <div class="max-w-6xl w-full mx-auto bg-slate-900/20 p-4 rounded-xl border border-slate-800 mb-8">
+        <h2 class="text-xs font-bold text-slate-400 mb-3 tracking-widest">// IMPLANTAR NOVA MISSÃO NO QUADRO</h2>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+            <div class="md:col-span-5">
+                <input id="task-title" type="text" placeholder="Nome da tarefa ou objetivo..." class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-red-500 transition-colors">
+            </div>
+            <div class="grid grid-cols-3 gap-2 md:col-span-5">
+                <div>
+                    <label class="block text-[9px] uppercase font-bold text-slate-500 mb-1">Prazo (1-3)</label>
+                    <input id="task-prazo" type="number" min="1" max="3" value="1" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-center focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase font-bold text-slate-500 mb-1">Import. (1-3)</label>
+                    <input id="task-importancia" type="number" min="1" max="3" value="1" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-center focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase font-bold text-slate-500 mb-1">Dific. (1-3)</label>
+                    <input id="task-dificuldade" type="number" min="1" max="3" value="1" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-center focus:outline-none focus:border-red-500">
+                </div>
+            </div>
+            <div class="md:col-span-2">
+                <button onclick="adicionarCardNaLista()" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded text-xs tracking-widest uppercase transition-all shadow-lg active:scale-[0.98]">
+                    + CRIAR CARD
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-6xl w-full mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6 flex-grow items-start">
+        
+        <section class="lg:col-span-3">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+                <h2 class="text-sm font-bold text-red-400 tracking-wider">// MISSÕES ATIVAS <span id="task-count" class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded ml-2">0</span></h2>
+            </div>
+            
+            <div id="board-tasks" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div id="empty-state" class="col-span-full border border-dashed border-slate-800 rounded-xl p-12 text-center text-slate-600 text-sm">
+                    Nenhum card ativo no momento. Use o formulário acima para implantar missões.
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-slate-900/10 p-4 rounded-xl border border-slate-800 space-y-4 flex flex-col justify-between h-full">
             <div>
-                <h2 class="text-lg font-bold text-red-400 mb-4 border-b border-slate-800 pb-2 tracking-wide">// REGISTRAR MISSÃO</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Nome da Tarefa</label>
-                        <input id="task-title" type="text" placeholder="Ex: Estudar FastAPI" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-red-500 transition-colors">
-                    </div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Prazo (1-3)</label>
-                            <input id="task-prazo" type="number" min="1" max="3" value="1" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-red-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Import. (1-3)</label>
-                            <input id="task-importancia" type="number" min="1" max="3" value="1" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-red-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Dific. (1-3)</label>
-                            <input id="task-dificuldade" type="number" min="1" max="3" value="1" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-red-500">
-                        </div>
-                    </div>
+                <h2 class="text-xs font-bold text-amber-400 mb-3 border-b border-slate-800 pb-2 tracking-wide">// HISTÓRICO DE ESTILO</h2>
+                <div id="log-container" class="font-mono text-[11px] space-y-2 overflow-y-auto max-h-[250px] pr-2 text-slate-500">
+                    <p class="text-slate-600">[SISTEMA OPERACIONAL ONLINE]</p>
                 </div>
             </div>
             
-            <div class="mt-6 space-y-2">
-                <button onclick="concluirTarefa()" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-4 rounded text-sm tracking-widest uppercase transition-all shadow-lg active:scale-[0.98]">
-                    CONCLUIR MISSÃO [ +COMBO ]
-                </button>
-                
-                <button onclick="resetarPontos()" class="w-full bg-slate-950 hover:bg-red-950 text-red-500 font-bold py-2 px-4 rounded text-xs tracking-widest uppercase transition-all border border-red-950 hover:border-red-500">
-                    REINICIAR SISTEMA [ RESET ]
-                </button>
-            </div>
-        </section>
-
-        <section class="bg-slate-900/30 p-6 rounded-xl border border-slate-800 flex flex-col">
-            <h2 class="text-lg font-bold text-amber-400 mb-4 border-b border-slate-800 pb-2 tracking-wide">// HISTÓRICO DE ESTILO</h2>
-            <div id="log-container" class="flex-grow font-mono text-xs space-y-2 overflow-y-auto max-h-[250px] pr-2 text-slate-400">
-                <p class="text-slate-600">[SISTEMA VIA INTERNET CONECTADO]</p>
-                <p class="text-red-500/80">> Destrói tarefas para acumular estilo.</p>
-            </div>
+            <button onclick="resetarPontos()" class="w-full bg-slate-950 hover:bg-red-950 text-red-500 font-bold py-2 px-4 rounded text-[10px] tracking-widest uppercase transition-all border border-red-950 hover:border-red-500">
+                REINICIAR SISTEMA [ RESET ]
+            </button>
         </section>
     </main>
 
-    <footer class="text-center text-[10px] text-slate-600 tracking-widest font-mono uppercase">
-        UltraQuest Engine v1.0 // Operando 24h na Nuvem
+    <footer class="text-center text-[10px] text-slate-600 tracking-widest font-mono uppercase mt-8">
+        UltraQuest Board Engine v1.1 // ClickUp Mode
     </footer>
 
     <script>
         // ADICIONE O SEU LINK DA RENDER AQUI (SEM O /DOCS NO FINAL)
         const API_URL = "https://ultraquest-backend.onrender.com"; 
+        
+        // Array local para simular o banco de cards na interface por enquanto
+        let missoes Ativas = [];
 
         async function atualizarStatus() {
             try {
@@ -96,43 +109,116 @@
             }
         }
 
-        async function concluirTarefa() {
-            const titulo = document.getElementById('task-title').value || "Missão Sem Nome";
+        function renderizarQuadros() {
+            const container = document.getElementById('board-tasks');
+            const emptyState = document.getElementById('empty-state');
+            
+            // Remove os cards antigos, mantendo apenas o empty state se necessário
+            const cards = container.querySelectorAll('.task-card');
+            cards.forEach(card => card.remove());
+
+            if (missoesAtivas.length === 0) {
+                emptyState.style.display = 'block';
+                document.getElementById('task-count').innerText = "0";
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            document.getElementById('task-count').innerText = missoesAtivas.length;
+
+            missoesAtivas.forEach((missao, index) => {
+                // Calcula uma cor de destaque com base na dificuldade
+                const corDificuldade = missao.dificuldade === 3 ? 'border-l-red-500' : missao.dificuldade === 2 ? 'border-l-amber-500' : 'border-l-slate-500';
+                
+                const cardHtml = `
+                    <div class="task-card bg-slate-900/40 border border-slate-800 border-l-4 ${corDificuldade} p-4 rounded-lg flex flex-col justify-between gap-4 backdrop-blur-sm transition-all hover:border-slate-700">
+                        <div>
+                            <h3 class="text-sm font-bold tracking-wide text-slate-100 break-words">${missao.titulo}</h3>
+                            <div class="flex gap-2 mt-2">
+                                <span class="text-[9px] bg-slate-950 border border-slate-800 px-2 py-0.5 rounded text-slate-400">PZ: ${missao.prazo}</span>
+                                <span class="text-[9px] bg-slate-950 border border-slate-800 px-2 py-0.5 rounded text-slate-400">IMP: ${missao.importancia}</span>
+                                <span class="text-[9px] bg-slate-950 border border-slate-800 px-2 py-0.5 rounded text-red-400">DIF: ${missao.dificuldade}</span>
+                            </div>
+                        </div>
+                        <button onclick="concluirCard(${index})" class="w-full bg-slate-950 hover:bg-emerald-950 text-emerald-400 hover:text-emerald-300 border border-emerald-900/60 hover:border-emerald-500 font-black py-1.5 px-3 rounded text-[10px] tracking-widest uppercase transition-all">
+                            ✓ CONCLUIR [ +PONTOS ]
+                        </button>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        function adicionarCardNaLista() {
+            const titulo = document.getElementById('task-title').value.trim();
             const prazo = parseInt(document.getElementById('task-prazo').value);
             const importancia = parseInt(document.getElementById('task-importancia').value);
-            constBox dificuldade = parseInt(document.getElementById('task-dificuldade').value);
+            const dificuldade = parseInt(document.getElementById('task-dificuldade').value);
+
+            if (!titulo) {
+                alert("Dê um título para a sua missão antes de criá-la!");
+                return;
+            }
+
+            // Adiciona no array local
+            missoesAtivas.push({ titulo, prazo, importancia, dificuldade });
+            
+            // Limpa o campo de texto
+            document.getElementById('task-title').value = "";
+            
+            // Atualiza o mural na tela
+            renderizarQuadros();
+            
+            const logContainer = document.getElementById('log-container');
+            logContainer.innerHTML += `<p class="text-blue-400">> Card implantado: "${titulo}"</p>`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        async function concluirCard(index) {
+            const missao = missoesAtivas[index];
 
             try {
                 const res = await fetch(`${API_URL}/tarefas/concluir`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ titulo, prazo, importancia, dificuldade })
+                    body: JSON.stringify({
+                        titulo: missao.titulo,
+                        prazo: missao.prazo,
+                        importancia: missao.importancia,
+                        dificuldade: missao.dificuldade
+                    })
                 });
                 
                 const data = await res.json();
                 
-                const container = document.getElementById('log-container');
-                container.innerHTML += `<p class="text-emerald-400">> Concluído: "${titulo}" (+${data.pontos_ganhos} pts) -> RANK: ${data.estado.rank}</p>`;
-                container.scrollTop = container.scrollHeight;
+                const logContainer = document.getElementById('log-container');
+                logContainer.innerHTML += `<p class="text-emerald-400">> Destruído: "${missao.titulo}" (+${data.pontos_ganhos} pts) -> ${data.estado.rank}</p>`;
+                logContainer.scrollTop = logContainer.scrollHeight;
 
+                // Remove o card concluído da nossa lista visual
+                missoesAtivas.splice(index, 1);
+                
+                // Atualiza o mural e o placar
+                renderizarQuadros();
                 atualizarStatus();
-                document.getElementById('task-title').value = "";
             } catch (err) {
-                alert("Erro ao enviar dados para o servidor da Render.");
+                alert("Erro ao enviar conclusão para o servidor da Render.");
             }
         }
 
-        // NOVA FUNÇÃO: Envia o comando de reset e atualiza o ecrã
         async function resetarPontos() {
-            if (!confirm("Tens a certeza que desejas apagar todos os teus pontos e voltar ao Rank base?")) return;
+            if (!confirm("Tem certeza que deseja apagar todos os seus pontos e limpar o quadro?")) return;
 
             try {
                 const res = await fetch(`${API_URL}/status/reset`, { method: 'POST' });
                 const data = await res.json();
                 
-                const container = document.getElementById('log-container');
-                container.innerHTML += `<p class="text-red-500 font-bold">> [ALERTA] TODOS OS PONTOS FORAM ZERADOS NA NUVEM.</p>`;
-                container.scrollTop = container.scrollHeight;
+                missoesAtivas = [];
+                renderizarQuadros();
+                
+                const logContainer = document.getElementById('log-container');
+                logContainer.innerHTML += `<p class="text-red-500 font-bold">> [ALERTA] QUADRO E RANK REINICIADOS.</p>`;
+                logContainer.scrollTop = logContainer.scrollHeight;
 
                 atualizarStatus();
             } catch (err) {
@@ -140,9 +226,10 @@
             }
         }
 
-        // Atualiza a cada 5 segundos para verificar decaimento por inatividade
+        // Atualiza o status de inatividade a cada 5 segundos
         setInterval(atualizarStatus, 5000);
         atualizarStatus();
+        renderizarQuadros();
     </script>
 </body>
 </html>
